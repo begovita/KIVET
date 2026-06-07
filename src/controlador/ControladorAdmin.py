@@ -101,6 +101,7 @@ class ControladorAdmin:
         if not ruta_archivo:
             return
 
+
         respuesta = QMessageBox.question(
             self.vista,
             "Confirmación de Restauración",
