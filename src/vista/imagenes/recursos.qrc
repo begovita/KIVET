@@ -1,0 +1,5 @@
+<RCC>
+  <qresource prefix="imagenes">
+    <file>logoKiVet.jpg</file>
+  </qresource>
+</RCC>
