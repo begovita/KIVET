@@ -1,5 +1,5 @@
 import os
-from PyQt5.QtWidgets import QMainWindow
+from PyQt5.QtWidgets import QMainWindow, QMessageBox, QFileDialog
 from PyQt5.QtGui import QPixmap
 from PyQt5 import uic
 from src.controlador.ControladorAdmin import ControladorAdmin
@@ -21,3 +21,23 @@ class VistaAdmin(QMainWindow, Form):
                 self.label_3.setScaledContents(True)
 
         self.controlador = ControladorAdmin(self, dni_admin)
+
+    def mostrar_total(self, total):
+        QMessageBox.information(self, "Facturación", f"Total mensual: {total:.2f} €")
+
+    def mostrar_error(self, mensaje):
+        QMessageBox.critical(self, "Error", mensaje)
+
+    def mostrar_exito(self, mensaje):
+        QMessageBox.information(self, "Éxito", mensaje)
+
+    def pedir_ruta_guardado(self):
+        ruta, _ = QFileDialog.getSaveFileName(self, "Guardar", "", "*.sql")
+        return ruta
+
+    def pedir_ruta_lectura(self):
+        ruta, _ = QFileDialog.getOpenFileName(self, "Abrir", "", "*.sql")
+        return ruta
+
+    def confirmar_accion(self):
+        return QMessageBox.question(self, "Atención", "¿Continuar?") == QMessageBox.Yes
