@@ -1,9 +1,9 @@
-from PyQt5.QtWidgets import QMessageBox
-from src.modelo.dao.MascotaDAO import MascotaDAO
+from src.modelo.logica.ServicioMascota import ServicioMascota
 from src.vista.ModificarMascota import ModificarMascota
 from src.vista.PedirCita import PedirCita
 from src.vista.Informes import Informes
 from src.vista.Facturas import Facturas
+
 
 class ControladorMascota:
     def __init__(self, vista, id_mascota, nombre_mascota, controlador_menu):
@@ -11,10 +11,11 @@ class ControladorMascota:
         self.id_mascota = id_mascota
         self.nombre_mascota = nombre_mascota
         self.controlador_menu = controlador_menu
-        self.dao = MascotaDAO()
+
+        self.servicio = ServicioMascota()
 
         if hasattr(self.vista, 'btnEliminar'):
-            self.vista.btnEliminar.clicked.connect(self.eliminar_mascota)
+            self.vista.btnEliminar.clicked.connect(self.procesar_eliminacion)
 
         if hasattr(self.vista, 'btnModificar'):
             self.vista.btnModificar.clicked.connect(self.abrir_modificar)
@@ -28,22 +29,20 @@ class ControladorMascota:
         if hasattr(self.vista, 'btnVerFacturas'):
             self.vista.btnVerFacturas.clicked.connect(self.abrir_facturas)
 
-    def eliminar_mascota(self):
-        respuesta = QMessageBox.question(self.vista, "Confirmar eliminación", f"¿Estás seguro de que quieres eliminar a {self.nombre_mascota}? Esta acción no se puede deshacer.",QMessageBox.Yes | QMessageBox.No)
+    def procesar_eliminacion(self):
+        if self.vista.confirmar_eliminacion(self.nombre_mascota):
+            try:
+                self.servicio.eliminar_mascota(self.id_mascota)
 
-        if respuesta == QMessageBox.Yes:
-            if self.dao.eliminar(self.id_mascota):
-                QMessageBox.information(self.vista, "Éxito", f"{self.nombre_mascota} ha sido eliminado/a.")
+                self.vista.mostrar_exito(f"{self.nombre_mascota} ha sido eliminado/a.")
                 self.controlador_menu.cargar_mascotas()
-                # se cierra la ventana y vuelve al menu ppal
-                self.vista.close()
-            else:
-                QMessageBox.critical(self.vista, "Error", "No se pudo eliminar la mascota.")
+                self.vista.cerrar_ventana()
+            except Exception as e:
+                self.vista.mostrar_error(str(e))
 
     def abrir_modificar(self):
         self.vista_modificar = ModificarMascota(self.id_mascota, self.nombre_mascota, self.controlador_menu)
         self.vista_modificar.show()
-        # no escondo el panel, abro la ventanita encima
 
     def abrir_pedir_cita(self):
         self.vista_cita = PedirCita(self.id_mascota, self.nombre_mascota)

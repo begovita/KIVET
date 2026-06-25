@@ -1,4 +1,5 @@
 from src.modelo.dao.CitaDAO import CitaDAO
+from src.modelo.vo.CitaVO import CitaVO
 
 class ServicioCitas:
     def __init__(self):
@@ -14,3 +15,10 @@ class ServicioCitas:
         exito = self.dao_citas.modificar_cita(id_cita, nueva_fecha, nueva_hora)
         if not exito:
             raise Exception("No se pudo actualizar la cita en la base de datos.")
+
+    def agendar_cita(self, fecha, hora, motivo, id_mascota):
+        nueva_cita = CitaVO(fecha, hora, motivo, id_mascota)
+
+        exito = self.dao_citas.insertar(nueva_cita)
+        if not exito:
+            raise Exception("No se pudo guardar la cita.")
